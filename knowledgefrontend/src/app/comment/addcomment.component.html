@@ -1,0 +1,50 @@
+<app-header> </app-header>
+
+<div *ngIf="pk_c_id==0" >Add Comment Here</div>
+  <div *ngIf="pk_c_id!=0" >Edit Comment Here</div>
+ 
+
+<form (ngSubmit)="addComment()">
+
+  <div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Comment Id:</span>
+  <td><input type="number" name="pk_c_id" [(ngModel)]="pk_c_id"/></td>
+</div>
+<br/> 
+
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Discussion Title:</span>
+  <td>
+  <select class="form-control" id="fk_d_id" 
+[(ngModel)]="fk_d_id" name="fk_d_id" required>
+<option *ngFor="let s of dis1" [value]="s.pk_d_id">{{s.d_title}}</option>
+</select>
+  </td>
+</div>
+<br/>
+
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Email Id:</span>
+  <td><input type="text" name="fk_email_id" [(ngModel)]="fk_email_id" /></td>
+</div>
+<br/>
+
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Comment:</span>
+  <td><input type="text" name="comment" [(ngModel)]="comment" /></td>
+</div>
+<br/>
+<!--
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Date:</span>
+  <td><input type="date" name="date" [(ngModel)]="date" /></td>
+</div>
+<br/>
+-->
+
+
+
+<div *ngIf="pk_c_id==0" ><button type="submit">add comment</button></div>
+<div *ngIf="pk_c_id!=0" ><button type="submit">edit comment</button></div>
+</form>
+

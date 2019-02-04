@@ -1,0 +1,45 @@
+<app-header> </app-header>
+ <div *ngIf="pk_test_details_id==0" >Add Test Details</div>
+  <div *ngIf="pk_test_details_id!=0" >Edit Test Details</div>
+
+
+<form (ngSubmit)="addTest_details()">
+
+
+<br/>
+
+
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Category Name:</span>
+  <td>
+  <select class="form-control" id="fk_cat_id" 
+[(ngModel)]="fk_cat_id" name="fk_cat_id" required>
+<option *ngFor="let s of allcat" [value]="s.pk_cat_id">{{s.cat_name}}</option>
+</select>
+  </td>
+</div>
+<br/>
+
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Email Id:</span>
+  <td><input type="text" name="fk_email_id" [(ngModel)]="fk_email_id" /></td>
+</div>
+<br/>
+
+
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Test Marks:</span>
+  <td><input type="text" name="t_marks" [(ngModel)]="t_marks" /></td>
+</div>
+<br/>
+
+<br/>
+
+
+
+<div *ngIf="pk_test_details_id==0"><button type="submit">Add Test Details</button></div>
+<div *ngIf="pk_test_details_id!=0"><button type="submit">Edit Test Details</button></div>
+
+
+</form>
+

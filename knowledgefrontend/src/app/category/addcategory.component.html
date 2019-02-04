@@ -1,0 +1,38 @@
+<app-header> </app-header>
+<div *ngIf="pk_cat_id==0" >Add Category Here</div>
+  <div *ngIf="pk_cat_id!=0" >Edit Category Here</div>
+ 
+
+<form (ngSubmit)="addCategory()">
+  <!--
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Category Id:</span>
+  <td><input type="number" name="pk_cat_id" [(ngModel)]="pk_cat_id"/></td>
+</div>
+<br/> -->
+
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Category Name:</span>
+  <td><input type="text" name="cat_name" [(ngModel)]="cat_name" /></td>
+</div>
+<br/>
+
+<!--<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Image:</span>
+  <td><input type="text" name="cat_img" [(ngModel)]="cat_img" /></td>
+</div>
+<br/>-->
+
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Category Image:</span>
+  <td><input type="file"  (change)="fileChange(input)" #input/></td>
+</div>
+<!--<div *ngFor="let file_src of file_srcs; let i = index">  -->
+  <img [attr.src]='file_srcs[0]' alt=""/>
+  
+
+<div *ngIf="pk_cat_id==0"><button type="submit">Add Category</button></div>
+<div *ngIf="pk_cat_id!=0"><button type="submit">Edit Category</button></div>
+
+</form>
+

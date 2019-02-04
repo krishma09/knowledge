@@ -1,0 +1,62 @@
+<app-header> </app-header>
+ <div *ngIf="pk_d_id==0" >Add Discussion Here</div>
+  <div *ngIf="pk_d_id!=0" >Edit Discussion Here</div>
+
+
+<form (ngSubmit)="addDiscussion()">
+
+  <!--
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Discussion Id:</span>
+  <td><input type="number" name="pk_d_id" [(ngModel)]="pk_d_id"/>
+  
+  </td> 
+  </div>
+   -->
+
+
+
+<br/>
+
+
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Category Name:</span>
+  <td><!--<input type="text" name="fk_cat_id" [(ngModel)]="fk_cat_id" />-->
+  <select class="form-control" id="fk_cat_id" 
+[(ngModel)]="fk_cat_id" name="fk_cat_id" required>
+<option *ngFor="let s of allcat" [value]="s.pk_cat_id">{{s.cat_name}}</option>
+</select>
+  </td>
+</div>
+<br/>
+
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Discussion Title:</span>
+  <td><input type="text" name="d_title" [(ngModel)]="d_title" /></td>
+</div>
+<br/>
+
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Discussion Description:</span>
+  <td><input type="text" name="d_desc" [(ngModel)]="d_desc" /></td>
+</div>
+<br/>
+<!--
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Discussion Date:</span>
+  <td><input type="date" name="d_date" [(ngModel)]="d_date" /></td>
+</div>
+<br/>
+-->
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Email Id:</span>
+  <td><input type="text" name="fk_email_id" [(ngModel)]="fk_email_id" /></td>
+</div>
+<br/>
+
+<div *ngIf="pk_d_id==0"><button type="submit">add discussion</button></div>
+<div *ngIf="pk_d_id!=0"><button type="submit">Edit discussion</button></div>
+
+
+</form>
+

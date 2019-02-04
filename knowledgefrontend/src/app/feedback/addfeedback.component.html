@@ -1,0 +1,39 @@
+<app-header> </app-header>
+<div *ngIf="pk_f_id==0" >Add Feedback Here</div>
+  <div *ngIf="pk_f_id!=0" >Edit Feedback Here</div>
+ 
+
+<form (ngSubmit)="addFeedback()">
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Feedback Category:</span>
+  <td><input type="text" name="f_cat" [(ngModel)]="f_cat"/></td>
+</div>
+<br/> 
+
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Email Id:</span>
+  <td><input type="text" name="fk_email_id" [(ngModel)]="fk_email_id" /></td>
+</div>
+<br/>
+
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Feedback :</span>
+  <td><input type="text" name="f_desc" [(ngModel)]="f_desc" /></td>
+</div>
+<br/>
+<!--
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Feedback Date :</span>
+  <td><input type="date" name="f_date" [(ngModel)]="f_date" /></td>
+</div>
+<br/>
+-->
+
+<div *ngIf="pk_f_id==0"><button type="submit">Add Feedback</button></div>
+<div *ngIf="pk_f_id!=0"><button type="submit">Edit Feedback</button></div>
+
+
+
+
+</form>
+

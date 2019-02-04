@@ -1,0 +1,60 @@
+<app-header> </app-header>
+ <div *ngIf="pk_t_id==0" >Add Test Here</div>
+  <div *ngIf="pk_t_id!=0" >Edit Test Here</div>
+ 
+
+<form (ngSubmit)="addTest()">
+
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Category Name:</span>
+  <td><!--<input type="text" name="fk_cat_id" [(ngModel)]="fk_cat_id" />-->
+  <select class="form-control" id="fk_cat_id" 
+[(ngModel)]="fk_cat_id" name="fk_cat_id" required>
+<option *ngFor="let s of allcat" [value]="s.pk_cat_id">{{s.cat_name}}</option>
+</select>
+  </td>
+</div>
+<br/>
+
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Question:</span>
+  <td><input type="text" name="t_que" [(ngModel)]="t_que" /></td>
+</div>
+<br/>
+
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Option A:</span>
+  <td><input type="text" name="t_option1" [(ngModel)]="t_option1" /></td>
+</div>
+<br/>
+
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Option B:</span>
+  <td><input type="text" name="t_option2" [(ngModel)]="t_option2" /></td>
+</div>
+<br/>
+
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Option C:</span>
+  <td><input type="text" name="t_option3" [(ngModel)]="t_option3" /></td>
+</div>
+<br/>
+
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Option D:</span>
+  <td><input type="text" name="t_option4" [(ngModel)]="t_option4" /></td>
+</div>
+<br/>
+
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Answer:</span>
+  <td><input type="text" name="t_answer" [(ngModel)]="t_answer" /></td>
+</div>
+<br/>
+
+<div *ngIf="pk_t_id==0"><button type="submit">Add Test</button></div>
+<div *ngIf="pk_t_id!=0"><button type="submit">Edit Test</button></div>
+
+
+</form>
+

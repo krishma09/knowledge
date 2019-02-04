@@ -1,0 +1,1133 @@
+From 59aa528cd888ed3422cef756d1af4c182c341c43 Mon Sep 17 00:00:00 2001
+From: krishma09 <krishmabagadia@gmail.com>
+Date: Mon, 21 Jan 2019 11:42:03 +0530
+Subject: [PATCH] modified
+
+---
+ addcategory.component.ts                          | 189 ++++++++++++++++++++++
+ angular-cli.json                                  |   3 +-
+ package.json                                      |  25 +--
+ src/app/app.module.ts                             |  11 +-
+ src/app/app.routing.ts                            |   8 +-
+ src/app/category/addcategory.component.ts         | 189 ----------------------
+ src/app/header.component.html                     |   1 +
+ src/app/shared/answer-user-model.ts               |   3 +-
+ src/app/shared/comment-user-model.ts              |   3 +-
+ src/app/shared/discussion-model1.ts               |   4 +-
+ src/app/shared/feedback-user-model.ts             |   3 +-
+ src/app/shared/question-model1.ts                 |   4 +-
+ src/app/shared/questiondata.service.ts            |   2 +-
+ src/app/shared/subcat-model.ts                    |   6 +
+ src/app/shared/subcatdata.service.ts              |   8 +
+ src/app/shared/test-cat-model.ts                  |   3 +-
+ src/app/shared/testdetails-model.ts               |   4 +
+ src/app/shared/testdetails-model1.ts              |   6 +
+ src/app/shared/testdetailsdata.service.ts         |  63 ++++++++
+ src/app/testdetails/addtestdetails.component.css  |   0
+ src/app/testdetails/addtestdetails.component.html |  45 ++++++
+ src/app/testdetails/addtestdetails.component.ts   | 108 +++++++++++++
+ src/app/testdetails/testdetails.component.css     |   0
+ src/app/testdetails/testdetails.component.html    |  46 ++++++
+ src/app/testdetails/testdetails.component.ts      | 112 +++++++++++++
+ 25 files changed, 633 insertions(+), 213 deletions(-)
+ create mode 100644 addcategory.component.ts
+ delete mode 100644 src/app/category/addcategory.component.ts
+ create mode 100644 src/app/shared/subcat-model.ts
+ create mode 100644 src/app/shared/subcatdata.service.ts
+ create mode 100644 src/app/shared/testdetails-model.ts
+ create mode 100644 src/app/shared/testdetails-model1.ts
+ create mode 100644 src/app/shared/testdetailsdata.service.ts
+ create mode 100644 src/app/testdetails/addtestdetails.component.css
+ create mode 100644 src/app/testdetails/addtestdetails.component.html
+ create mode 100644 src/app/testdetails/addtestdetails.component.ts
+ create mode 100644 src/app/testdetails/testdetails.component.css
+ create mode 100644 src/app/testdetails/testdetails.component.html
+ create mode 100644 src/app/testdetails/testdetails.component.ts
+
+diff --git a/addcategory.component.ts b/addcategory.component.ts
+new file mode 100644
+index 0000000..e40fe57
+--- /dev/null
++++ b/addcategory.component.ts
+@@ -0,0 +1,189 @@
++import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
++import { CategoryModel } from '../shared/category-model';
++import { CategorydataService } from '../shared/categorydata.service';
++import { Router,ActivatedRoute } from '@angular/router';
++import { Subscription } from 'rxjs/Rx';
++
++
++
++@Component({
++  selector: 'app-addcategory',
++  templateUrl: './addcategory.component.html',
++  styleUrls: ['./addcategory.component.css']
++})
++export class AddcategoryComponent implements OnInit {
++private pk_cat_id:number;
++private cat_name:string;
++private cat_img:string;
++  public cat:CategoryModel[]=[];
++  private _subscription:Subscription;
++
++
++title = 'app works!';
++  path='';
++   public file_srcs: string[] = [];
++  public debug_size_before: string[] = [];
++  public debug_size_after: string[] = [];
++
++  constructor(public _cat_data:CategorydataService,public _router:Router,public _acroute:ActivatedRoute,private changeDetectorRef: ChangeDetectorRef) { }
++
++fileChange(input){
++  this.readFiles(input.files);
++}
++readFile(file, reader, callback){
++  reader.onload = () => {
++    callback(reader.result);
++    this.cat_img=reader.result;
++    console.log(reader.result);
++  }
++
++  reader.readAsDataURL(file);
++}
++readFiles(files, index=0){
++  // Create the file reader
++  let reader = new FileReader();
++  
++  // If there is a file
++  if(index in files){
++    // Start reading this file
++    this.readFile(files[index], reader, (result) =>{
++      // Create an img element and add the image file data to it
++      var img = document.createElement("img");
++      img.src = result;
++  
++      // Send this img to the resize function (and wait for callback)
++      this.resize(img, 250, 250, (resized_jpeg, before, after)=>{
++        // For debugging (size in bytes before and after)
++        this.debug_size_before.push(before);
++        this.debug_size_after.push(after);
++  
++        // Add the resized jpeg img source to a list for preview
++        // This is also the file you want to upload. (either as a
++        // base64 string or img.src = resized_jpeg if you prefer a file). 
++        this.file_srcs.push(resized_jpeg);
++  
++        // Read the next file;
++        this.readFiles(files, index+1);
++      });
++    });
++  }else{
++    // When all files are done This forces a change detection
++    this.changeDetectorRef.detectChanges();
++  }
++}
++resize(img, MAX_WIDTH:number, MAX_HEIGHT:number, callback){
++  // This will wait until the img is loaded before calling this function
++  return img.onload = () => {
++
++    // Get the images current width and height
++    var width = img.width;
++    var height = img.height;
++
++    // Set the WxH to fit the Max values (but maintain proportions)
++    if (width > height) {
++        if (width > MAX_WIDTH) {
++            height *= MAX_WIDTH / width;
++            width = MAX_WIDTH;
++        }
++    } else {
++        if (height > MAX_HEIGHT) {
++            width *= MAX_HEIGHT / height;
++            height = MAX_HEIGHT;
++        }
++    }
++
++    // create a canvas object
++    var canvas = document.createElement("canvas");
++
++    // Set the canvas to the new calculated dimensions
++    canvas.width = width;
++    canvas.height = height;
++    var ctx = canvas.getContext("2d");  
++
++    ctx.drawImage(img, 0, 0,  width, height); 
++
++    // Get this encoded as a jpeg
++    // IMPORTANT: 'jpeg' NOT 'jpg'
++    var dataUrl = canvas.toDataURL('image/jpeg');
++
++    // callback with the results
++    callback(dataUrl, img.src.length, dataUrl.length);
++  };
++}
++
++
++  ngOnInit() {
++
++this._subscription=this._acroute.params.subscribe(
++
++      (params:any)=>{
++
++       this.pk_cat_id =params["pk_cat_id"];
++      }
++    );
++
++     this._cat_data.getAllCategory().subscribe(
++      (data:CategoryModel[])=>{
++        this.cat=data;
++      }
++    );
++    if(this.pk_cat_id!=0)
++    {
++      this._cat_data.getCategoryById(this.pk_cat_id).subscribe(
++
++        (data:CategoryModel[])=>{
++          
++          this.pk_cat_id=data[0].pk_cat_id,
++          this.cat_name=data[0].cat_name,
++          this.cat_img=data[0].cat_img;
++        }
++      );
++    }
++
++  }
++
++   addCategory()
++  {
++    if(this.pk_cat_id==0)
++    {
++
++    
++
++    this._cat_data.addCategory(new CategoryModel(this.pk_cat_id,this.cat_name,this.cat_img))
++    .subscribe(
++      (data:any)=>{
++
++         console.log(data);
++         this._router.navigate(['/allCategory']);
++    },
++    function(error){},
++    function(){
++     
++      alert('added');
++      }
++    );
++  }
++  
++  else
++  {
++    //edit
++    this._cat_data.updateCategory(new CategoryModel(this.pk_cat_id,this.cat_name,this.cat_img))
++    .subscribe(
++      (data:any)=>{
++
++         console.log(data); 
++         this._router.navigate(['/allCategory']); 
++    },
++    function(error){
++
++      alert(error);
++    },
++    function(){
++      alert('Updated');
++      }
++    );
++
++  }
++  }
++
++}
+diff --git a/angular-cli.json b/angular-cli.json
+index 9294c52..84b3d83 100644
+--- a/angular-cli.json
++++ b/angular-cli.json
+@@ -18,8 +18,9 @@
+         "styles.css"
+       ],
+       "scripts": [],
++      "environmentSource": "environments/environment.ts",
+       "environments": {
+-        "source": "environments/environment.ts",
++        
+         "dev": "environments/environment.ts",
+         "prod": "environments/environment.prod.ts"
+       }
+diff --git a/package.json b/package.json
+index 4f0d7ff..479e8b6 100644
+--- a/package.json
++++ b/package.json
+@@ -9,17 +9,20 @@
+     "test": "ng test",
+     "pree2e": "webdriver-manager update",
+     "e2e": "protractor"
+-    },
++  },
+   "private": true,
+   "dependencies": {
+-    "@angular/common": "2.0.0",
+-    "@angular/compiler": "2.0.0",
+-    "@angular/core": "2.0.0",
+-    "@angular/forms": "2.0.0",
+-    "@angular/http": "2.0.0",
+-    "@angular/platform-browser": "2.0.0",
+-    "@angular/platform-browser-dynamic": "2.0.0",
+-    "@angular/router": "3.0.0",
++    "@angular/animations": "^5.2.9",
++    "@angular/common": "^5.2.9",
++    "@angular/compiler": "^5.2.9",
++    "@angular/compiler-cli": "^5.2.9",
++    "@angular/core": "^5.2.9",
++    "@angular/forms": "^5.2.9",
++    "@angular/http": "^5.2.9",
++    "@angular/platform-browser": "^5.2.9",
++    "@angular/platform-browser-dynamic": "^5.2.9",
++    "@angular/platform-server": "^5.2.9",
++    "@angular/router": "^5.2.9",
+     "@ng-bootstrap/ng-bootstrap": "^1.0.0-alpha.7",
+     "core-js": "^2.4.1",
+     "debug-log": "^1.0.1",
+@@ -29,8 +32,8 @@
+     "zone.js": "^0.6.23"
+   },
+   "devDependencies": {
++    "@angular/cli": "^1.7.3",
+     "@types/jasmine": "^2.2.30",
+-    "angular-cli": "1.0.0-beta.16",
+     "codelyzer": "~0.0.26",
+     "jasmine-core": "2.4.1",
+     "jasmine-spec-reporter": "2.5.0",
+@@ -42,6 +45,6 @@
+     "protractor": "4.0.9",
+     "ts-node": "1.2.1",
+     "tslint": "3.13.0",
+-    "typescript": "2.0.2"
++    "typescript": "^2.4.2"
+   }
+ }
+diff --git a/src/app/app.module.ts b/src/app/app.module.ts
+index 80674e1..b64e65d 100644
+--- a/src/app/app.module.ts
++++ b/src/app/app.module.ts
+@@ -41,7 +41,10 @@ import { QuestionComponent } from './question/question.component';
+ import { AddquestionComponent } from './question/addquestion.component';
+ import { AnslinkComponent } from './question/anslink.component';
+ import { QuestionfilterPipe } from './question/questionfilter.pipe';
+-
++import { SubcatdataService } from './shared/subcatdata.service';
++import { TestdetailsdataService } from './shared/testdetailsdata.service';
++import { TestdetailsComponent } from './testdetails/testdetails.component';
++import { AddtestdetailsComponent } from './testdetails/addtestdetails.component';
+ 
+ 
+ @NgModule({
+@@ -71,7 +74,9 @@ import { QuestionfilterPipe } from './question/questionfilter.pipe';
+     QuestionComponent,
+     AddquestionComponent,
+     AnslinkComponent,
+-    QuestionfilterPipe
++    QuestionfilterPipe,
++    TestdetailsComponent,
++    AddtestdetailsComponent
+ 
+   ],
+   imports: [
+@@ -81,7 +86,7 @@ import { QuestionfilterPipe } from './question/questionfilter.pipe';
+     krishma1
+   ],
+   providers: [PaginationService,CategorydataService,AnswerdataService,QuestiondataService,
+-  CommentdataService,DiscussiondataService,FeedbackdataService,UserdataService,TestdataService],
++  CommentdataService,DiscussiondataService,FeedbackdataService,UserdataService,TestdataService,SubcatdataService,TestdetailsdataService],
+   bootstrap: [AppComponent]
+ })
+ export class AppModule { }
+diff --git a/src/app/app.routing.ts b/src/app/app.routing.ts
+index bf2abae..4fe3fea 100644
+--- a/src/app/app.routing.ts
++++ b/src/app/app.routing.ts
+@@ -4,7 +4,7 @@ import { AddcategoryComponent } from './category/addcategory.component';
+ import { AnswerComponent } from './answer/answer.component';
+ import { AddanswerComponent } from './answer/addanswer.component';
+ import { CommentComponent } from './comment/comment.component';
+-import {  AddcommentComponent} from './comment/addcomment.component';
++import {  AddcommentComponent } from './comment/addcomment.component';
+ import { DiscussionComponent } from './discussion/discussion.component';
+ import { AdddiscussionComponent } from './discussion/adddiscussion.component';
+ import { FeedbackComponent } from './feedback/feedback.component';
+@@ -17,6 +17,8 @@ import { AddtestComponent } from './test/addtest.component';
+ import { QuestionComponent } from './question/question.component';
+ import { AddquestionComponent } from './question/addquestion.component';
+ import { AnslinkComponent } from './question/anslink.component';
++import { TestdetailsComponent } from './testdetails/testdetails.component';
++import { AddtestdetailsComponent } from './testdetails/addtestdetails.component';
+ 
+ 
+ const krishma:Routes=[
+@@ -44,7 +46,9 @@ const krishma:Routes=[
+ {path:'addTest/:pk_t_id',component:AddtestComponent},
+ {path:'allQuestion',component:QuestionComponent},
+ {path:'addQuestion/:pk_q_id',component:AddquestionComponent},
+-{path:'anslink/:pk_q_id',component:AnslinkComponent}
++{path:'anslink/:pk_q_id',component:AnslinkComponent},
++{path:'allTestdetails',component:TestdetailsComponent},
++{path:'addTestdetails/:pk_test_details_id',component:AddtestdetailsComponent}
+ ];
+ 
+ export const krishma1=RouterModule.forRoot(krishma);
+\ No newline at end of file
+diff --git a/src/app/category/addcategory.component.ts b/src/app/category/addcategory.component.ts
+deleted file mode 100644
+index e40fe57..0000000
+--- a/src/app/category/addcategory.component.ts
++++ /dev/null
+@@ -1,189 +0,0 @@
+-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+-import { CategoryModel } from '../shared/category-model';
+-import { CategorydataService } from '../shared/categorydata.service';
+-import { Router,ActivatedRoute } from '@angular/router';
+-import { Subscription } from 'rxjs/Rx';
+-
+-
+-
+-@Component({
+-  selector: 'app-addcategory',
+-  templateUrl: './addcategory.component.html',
+-  styleUrls: ['./addcategory.component.css']
+-})
+-export class AddcategoryComponent implements OnInit {
+-private pk_cat_id:number;
+-private cat_name:string;
+-private cat_img:string;
+-  public cat:CategoryModel[]=[];
+-  private _subscription:Subscription;
+-
+-
+-title = 'app works!';
+-  path='';
+-   public file_srcs: string[] = [];
+-  public debug_size_before: string[] = [];
+-  public debug_size_after: string[] = [];
+-
+-  constructor(public _cat_data:CategorydataService,public _router:Router,public _acroute:ActivatedRoute,private changeDetectorRef: ChangeDetectorRef) { }
+-
+-fileChange(input){
+-  this.readFiles(input.files);
+-}
+-readFile(file, reader, callback){
+-  reader.onload = () => {
+-    callback(reader.result);
+-    this.cat_img=reader.result;
+-    console.log(reader.result);
+-  }
+-
+-  reader.readAsDataURL(file);
+-}
+-readFiles(files, index=0){
+-  // Create the file reader
+-  let reader = new FileReader();
+-  
+-  // If there is a file
+-  if(index in files){
+-    // Start reading this file
+-    this.readFile(files[index], reader, (result) =>{
+-      // Create an img element and add the image file data to it
+-      var img = document.createElement("img");
+-      img.src = result;
+-  
+-      // Send this img to the resize function (and wait for callback)
+-      this.resize(img, 250, 250, (resized_jpeg, before, after)=>{
+-        // For debugging (size in bytes before and after)
+-        this.debug_size_before.push(before);
+-        this.debug_size_after.push(after);
+-  
+-        // Add the resized jpeg img source to a list for preview
+-        // This is also the file you want to upload. (either as a
+-        // base64 string or img.src = resized_jpeg if you prefer a file). 
+-        this.file_srcs.push(resized_jpeg);
+-  
+-        // Read the next file;
+-        this.readFiles(files, index+1);
+-      });
+-    });
+-  }else{
+-    // When all files are done This forces a change detection
+-    this.changeDetectorRef.detectChanges();
+-  }
+-}
+-resize(img, MAX_WIDTH:number, MAX_HEIGHT:number, callback){
+-  // This will wait until the img is loaded before calling this function
+-  return img.onload = () => {
+-
+-    // Get the images current width and height
+-    var width = img.width;
+-    var height = img.height;
+-
+-    // Set the WxH to fit the Max values (but maintain proportions)
+-    if (width > height) {
+-        if (width > MAX_WIDTH) {
+-            height *= MAX_WIDTH / width;
+-            width = MAX_WIDTH;
+-        }
+-    } else {
+-        if (height > MAX_HEIGHT) {
+-            width *= MAX_HEIGHT / height;
+-            height = MAX_HEIGHT;
+-        }
+-    }
+-
+-    // create a canvas object
+-    var canvas = document.createElement("canvas");
+-
+-    // Set the canvas to the new calculated dimensions
+-    canvas.width = width;
+-    canvas.height = height;
+-    var ctx = canvas.getContext("2d");  
+-
+-    ctx.drawImage(img, 0, 0,  width, height); 
+-
+-    // Get this encoded as a jpeg
+-    // IMPORTANT: 'jpeg' NOT 'jpg'
+-    var dataUrl = canvas.toDataURL('image/jpeg');
+-
+-    // callback with the results
+-    callback(dataUrl, img.src.length, dataUrl.length);
+-  };
+-}
+-
+-
+-  ngOnInit() {
+-
+-this._subscription=this._acroute.params.subscribe(
+-
+-      (params:any)=>{
+-
+-       this.pk_cat_id =params["pk_cat_id"];
+-      }
+-    );
+-
+-     this._cat_data.getAllCategory().subscribe(
+-      (data:CategoryModel[])=>{
+-        this.cat=data;
+-      }
+-    );
+-    if(this.pk_cat_id!=0)
+-    {
+-      this._cat_data.getCategoryById(this.pk_cat_id).subscribe(
+-
+-        (data:CategoryModel[])=>{
+-          
+-          this.pk_cat_id=data[0].pk_cat_id,
+-          this.cat_name=data[0].cat_name,
+-          this.cat_img=data[0].cat_img;
+-        }
+-      );
+-    }
+-
+-  }
+-
+-   addCategory()
+-  {
+-    if(this.pk_cat_id==0)
+-    {
+-
+-    
+-
+-    this._cat_data.addCategory(new CategoryModel(this.pk_cat_id,this.cat_name,this.cat_img))
+-    .subscribe(
+-      (data:any)=>{
+-
+-         console.log(data);
+-         this._router.navigate(['/allCategory']);
+-    },
+-    function(error){},
+-    function(){
+-     
+-      alert('added');
+-      }
+-    );
+-  }
+-  
+-  else
+-  {
+-    //edit
+-    this._cat_data.updateCategory(new CategoryModel(this.pk_cat_id,this.cat_name,this.cat_img))
+-    .subscribe(
+-      (data:any)=>{
+-
+-         console.log(data); 
+-         this._router.navigate(['/allCategory']); 
+-    },
+-    function(error){
+-
+-      alert(error);
+-    },
+-    function(){
+-      alert('Updated');
+-      }
+-    );
+-
+-  }
+-  }
+-
+-}
+diff --git a/src/app/header.component.html b/src/app/header.component.html
+index 91f929c..641f360 100644
+--- a/src/app/header.component.html
++++ b/src/app/header.component.html
+@@ -20,6 +20,7 @@
+        <li><a routerLink="/allUser">User</a></li>
+        <li><a routerLink="/allTest">Test</a></li>
+        <li><a routerLink="/allQuestion">Question</a></li>
++       <li><a routerLink="/allTestdetails">Test Details</a></li>
+       </ul>
+   
+      </div><!-- /.navbar-collapse -->
+diff --git a/src/app/shared/answer-user-model.ts b/src/app/shared/answer-user-model.ts
+index b4591d8..df43eaf 100644
+--- a/src/app/shared/answer-user-model.ts
++++ b/src/app/shared/answer-user-model.ts
+@@ -1,5 +1,6 @@
+ export class AnswerUserModel {
+ 
+-    public constructor(public pk_ans_id:number,public ans_desc:string,public fk_email_id:string,public fk_q_id:number,public ans_date:string,public ans_ex:string,public flag:number,public ans_img:string,public u_name:string,public pk_email_id:string,public u_pwd:string,public u_gender:string,
++    public constructor(public pk_ans_id:number,public ans_desc:string,public fk_email_id:string,public fk_q_id:number,public ans_date:string,public ans_ex:string,public flag:number,public ans_img:string,
++    public u_name:string,public pk_email_id:string,public u_pwd:string,public u_gender:string,
+     public u_city:string,public u_pic:string){}
+ }
+diff --git a/src/app/shared/comment-user-model.ts b/src/app/shared/comment-user-model.ts
+index 089458d..ded0b26 100644
+--- a/src/app/shared/comment-user-model.ts
++++ b/src/app/shared/comment-user-model.ts
+@@ -1,7 +1,8 @@
+ export class CommentUserModel {
+ 
+ 
+-    public constructor(public fk_d_id:number,public fk_email_id:string,public comment:string,public date:string,public pk_c_id:number,public u_name:string,public pk_email_id:string,public u_pwd:string,public u_gender:string,public u_city:string,public u_pic:string) {}
++    public constructor(public fk_d_id:number,public fk_email_id:string,public comment:string,public date:string,public pk_c_id:number,
++    public u_name:string,public pk_email_id:string,public u_pwd:string,public u_gender:string,public u_city:string,public u_pic:string) {}
+ 
+  
+ 
+diff --git a/src/app/shared/discussion-model1.ts b/src/app/shared/discussion-model1.ts
+index 1261c1b..736f019 100644
+--- a/src/app/shared/discussion-model1.ts
++++ b/src/app/shared/discussion-model1.ts
+@@ -1,4 +1,6 @@
+ export class DiscussionModel1 {
+ 
+-    public constructor(public pk_d_id:number,public fk_cat_id:number,public d_title:string,public d_desc:string,public d_date:string,public fk_email_id:string,public pk_cat_id:number,public cat_name:string,public cat_img:string,public u_name:string,public pk_email_id:string,public u_pwd:string,public u_gender:string,public u_city:string,public u_pic:string) {}
++    public constructor(public pk_d_id:number,public fk_cat_id:number,public d_title:string,public d_desc:string,public d_date:string,public fk_email_id:string,
++    public pk_cat_id:number,public cat_name:string,public cat_img:string,
++    public u_name:string,public pk_email_id:string,public u_pwd:string,public u_gender:string,public u_city:string,public u_pic:string) {}
+ }
+diff --git a/src/app/shared/feedback-user-model.ts b/src/app/shared/feedback-user-model.ts
+index 9c5b699..22bde47 100644
+--- a/src/app/shared/feedback-user-model.ts
++++ b/src/app/shared/feedback-user-model.ts
+@@ -1,4 +1,5 @@
+ export class FeedbackUserModel {
+ 
+-    public constructor(public f_cat:string,public fk_email_id:string,public f_desc:string,public f_date:string,public pk_f_id:number,public u_name:string,public pk_email_id:string,public u_pwd:string,public u_gender:string,public u_city:string,public u_pic:string,public u_type:string) {}
++    public constructor(public f_cat:string,public fk_email_id:string,public f_desc:string,public f_date:string,public pk_f_id:number,
++    public u_name:string,public pk_email_id:string,public u_pwd:string,public u_gender:string,public u_city:string,public u_pic:string,public u_type:string) {}
+ }
+diff --git a/src/app/shared/question-model1.ts b/src/app/shared/question-model1.ts
+index 9a5a50d..c5c1d4c 100644
+--- a/src/app/shared/question-model1.ts
++++ b/src/app/shared/question-model1.ts
+@@ -1,4 +1,6 @@
+ export class QuestionModel1 {
+ 
+-    public constructor(public pk_q_id:number,public q_title:string,public q_desc:string,public q_img:string,public q_date:string,public fk_email_id:string,public fk_cat_id:number,public flag:number,public pk_cat_id:number,public cat_name:string,public cat_img:string,public u_name:string,public pk_email_id:string,public u_pwd:string,public u_gender:string,public u_city:string,public u_pic:string) {}
++    public constructor(public pk_q_id:number,public q_title:string,public q_desc:string,public q_img:string,public q_date:string,public fk_email_id:string,public fk_cat_id:number,public flag:number,
++    public pk_cat_id:number,public cat_name:string,public cat_img:string,
++    public u_name:string,public pk_email_id:string,public u_pwd:string,public u_gender:string,public u_city:string,public u_pic:string) {}
+ }
+diff --git a/src/app/shared/questiondata.service.ts b/src/app/shared/questiondata.service.ts
+index 56b888c..6de1322 100644
+--- a/src/app/shared/questiondata.service.ts
++++ b/src/app/shared/questiondata.service.ts
+@@ -9,7 +9,7 @@ private url:string="http://localhost:3000/questions/";
+ private url1:string="http://localhost:3000/questionsjoin/";
+   constructor(public _http:Http) { }
+ 
+-    getAllQuestion(){
++getAllQuestion(){
+ 
+ return this._http.get(this.url).map((res:Response)=>res.json());
+ }
+diff --git a/src/app/shared/subcat-model.ts b/src/app/shared/subcat-model.ts
+new file mode 100644
+index 0000000..0ca789e
+--- /dev/null
++++ b/src/app/shared/subcat-model.ts
+@@ -0,0 +1,6 @@
++export class SubcatModel {
++
++    public constructor(public pk_s_id:number,public s_name:string,public cat_img:string){}
++}
++
++// Incomplete
+\ No newline at end of file
+diff --git a/src/app/shared/subcatdata.service.ts b/src/app/shared/subcatdata.service.ts
+new file mode 100644
+index 0000000..b6552cf
+--- /dev/null
++++ b/src/app/shared/subcatdata.service.ts
+@@ -0,0 +1,8 @@
++import { Injectable } from '@angular/core';
++
++@Injectable()
++export class SubcatdataService {
++
++  constructor() { }
++
++}
+diff --git a/src/app/shared/test-cat-model.ts b/src/app/shared/test-cat-model.ts
+index 42cddef..66aa747 100644
+--- a/src/app/shared/test-cat-model.ts
++++ b/src/app/shared/test-cat-model.ts
+@@ -1,5 +1,6 @@
+ export class TestCatModel {
+ 
+- public constructor(public t_que:string,public t_option1:string,public t_option2:string,public t_option3:string,public t_option4:string,public t_answer:string,public fk_cat_id:number,public pk_t_id:number,public pk_cat_id:number,public cat_name:string,public cat_img:string) {}
++ public constructor(public t_que:string,public t_option1:string,public t_option2:string,public t_option3:string,public t_option4:string,public t_answer:string,public fk_cat_id:number,public pk_t_id:number,
++ public pk_cat_id:number,public cat_name:string,public cat_img:string) {}
+ 
+ }
+diff --git a/src/app/shared/testdetails-model.ts b/src/app/shared/testdetails-model.ts
+new file mode 100644
+index 0000000..e456af8
+--- /dev/null
++++ b/src/app/shared/testdetails-model.ts
+@@ -0,0 +1,4 @@
++export class TestdetailsModel {
++
++    public constructor(public pk_test_details_id:number,public fk_email_id:string,public fk_cat_id:number,public t_marks:number,public t_date:string){}
++}
+diff --git a/src/app/shared/testdetails-model1.ts b/src/app/shared/testdetails-model1.ts
+new file mode 100644
+index 0000000..b1925bc
+--- /dev/null
++++ b/src/app/shared/testdetails-model1.ts
+@@ -0,0 +1,6 @@
++export class TestdetailsModel1 {
++
++    public constructor(public pk_test_details_id:number,public fk_email_id:string,public fk_cat_id:number,public t_marks:number,public t_date:string,
++    public pk_cat_id:number,public cat_name:string,public cat_img:string,
++    public u_name:string,public pk_email_id:string,public u_pwd:string,public u_gender:string,public u_city:string,public u_pic:string){}
++}
+diff --git a/src/app/shared/testdetailsdata.service.ts b/src/app/shared/testdetailsdata.service.ts
+new file mode 100644
+index 0000000..c4340e8
+--- /dev/null
++++ b/src/app/shared/testdetailsdata.service.ts
+@@ -0,0 +1,63 @@
++import { Injectable } from '@angular/core';
++import { TestdetailsModel } from './testdetails-model';
++import { Http,Response,RequestOptions,Headers } from '@angular/http';
++import 'rxjs/Rx';
++
++@Injectable()
++export class TestdetailsdataService {
++
++private url:string="http://localhost:3000/tests_details/";
++private url1:string="http://localhost:3000/tests_detailsjoin/";
++ 
++ constructor(public _http:Http) { }
++
++
++getAllTest_details(){
++
++return this._http.get(this.url).map((res:Response)=>res.json());
++}
++addTest_details(item:TestdetailsModel){
++
++let body=JSON.stringify(item);
++let header=new Headers({'Content-Type':'application/json'});
++let req=new RequestOptions({headers:header});
++return this._http.post(this.url,body,req).map((res:Response)=>res.json());
++}
++deleteTest_details(id:number){
++
++let header=new Headers({'Content-Type':'application/json'});
++let req=new RequestOptions({headers:header});
++return this._http.delete(this.url+id,req).map((res:Response)=>res.json());
++}
++updateTest_details(item:TestdetailsModel){
++
++let body=JSON.stringify(item);
++let header=new Headers({'Content-Type':'application/json'});
++let req=new RequestOptions({headers:header});
++return this._http.put(this.url+item.pk_test_details_id,body,req).map((res:Response)=>res.json());
++}
++
++getTest_details_join(){
++
++return this._http.get(this.url1).map((res:Response)=>res.json());
++}
++
++getTest_details_ById(pk_test_details_id:number){
++  return this._http.get(this.url+pk_test_details_id).map((res:Response)=>res.json());
++  }
++
++   getTest_details_joinById(pk_test_details_id:number){
++  return this._http.get(this.url1+pk_test_details_id).map((res:Response)=>res.json());
++  }
++
++  deleteAll(item:TestdetailsModel[]){
++  let body=JSON.stringify(item);
++   let headers=new Headers({'Content-Type':'application/json'});
++  let requestoption=new RequestOptions({headers:headers});
++  return this._http.post(this.url+1,body,requestoption).map((res:Response)=>res.json());
++  
++}                                 
++
++
++
++}
+diff --git a/src/app/testdetails/addtestdetails.component.css b/src/app/testdetails/addtestdetails.component.css
+new file mode 100644
+index 0000000..e69de29
+diff --git a/src/app/testdetails/addtestdetails.component.html b/src/app/testdetails/addtestdetails.component.html
+new file mode 100644
+index 0000000..12c6b84
+--- /dev/null
++++ b/src/app/testdetails/addtestdetails.component.html
+@@ -0,0 +1,45 @@
++<app-header> </app-header>
++ <div *ngIf="pk_test_details_id==0" >Add Test Details</div>
++  <div *ngIf="pk_test_details_id!=0" >Edit Test Details</div>
++
++
++<form (ngSubmit)="addTest_details()">
++
++
++<br/>
++
++
++<div class="input-group">
++  <span class="input-group-addon" id="basic-addon1">Enter Category Name:</span>
++  <td>
++  <select class="form-control" id="fk_cat_id" 
++[(ngModel)]="fk_cat_id" name="fk_cat_id" required>
++<option *ngFor="let s of allcat" [value]="s.pk_cat_id">{{s.cat_name}}</option>
++</select>
++  </td>
++</div>
++<br/>
++
++<div class="input-group">
++  <span class="input-group-addon" id="basic-addon1">Enter Email Id:</span>
++  <td><input type="text" name="fk_email_id" [(ngModel)]="fk_email_id" /></td>
++</div>
++<br/>
++
++
++<div class="input-group">
++  <span class="input-group-addon" id="basic-addon1">Enter Test Marks:</span>
++  <td><input type="text" name="t_marks" [(ngModel)]="t_marks" /></td>
++</div>
++<br/>
++
++<br/>
++
++
++
++<div *ngIf="pk_test_details_id==0"><button type="submit">Add Test Details</button></div>
++<div *ngIf="pk_test_details_id!=0"><button type="submit">Edit Test Details</button></div>
++
++
++</form>
++
+diff --git a/src/app/testdetails/addtestdetails.component.ts b/src/app/testdetails/addtestdetails.component.ts
+new file mode 100644
+index 0000000..ab68ac3
+--- /dev/null
++++ b/src/app/testdetails/addtestdetails.component.ts
+@@ -0,0 +1,108 @@
++import { Component, OnInit } from '@angular/core';
++import { TestdetailsModel } from '../shared/testdetails-model';
++import { TestdetailsdataService } from '../shared/testdetailsdata.service';
++import { Router,ActivatedRoute } from '@angular/router';
++import { CategoryModel } from '../shared/category-model';
++import { CategorydataService } from '../shared/categorydata.service';
++import { Subscription } from 'rxjs/Rx';
++import { TestdetailsModel1 } from '../shared/testdetails-model1';
++
++@Component({
++  selector: 'app-addtestdetails',
++  templateUrl: './addtestdetails.component.html',
++  styleUrls: ['./addtestdetails.component.css']
++})
++export class AddtestdetailsComponent implements OnInit {
++
++  private pk_test_details_id:number;
++  private fk_email_id:string;
++  private fk_cat_id:number;
++  private t_marks:number;
++  private t_date:string;
++  private cat_name:string;
++  private pk_cat_id:string;
++
++  private _subscription:Subscription;
++
++  public allcat:CategoryModel[]=[];  
++  public test:TestdetailsModel1[]=[];
++
++  constructor(public _test_data:TestdetailsdataService,public _router:Router,public _acroute:ActivatedRoute,public _cat_data:CategorydataService) { }
++
++  ngOnInit() {
++
++this._subscription=this._acroute.params.subscribe(
++
++      (params:any)=>{
++
++       this.pk_test_details_id =params["pk_test_details_id"];
++      }
++    );
++
++    this._cat_data.getAllCategory().subscribe(
++      (data:CategoryModel[])=>{
++        this.allcat=data;
++      }
++    );
++    if(this.pk_test_details_id!=0)
++    {
++      this._test_data.getTest_details_ById(this.pk_test_details_id).subscribe(
++
++        (data:TestdetailsModel[])=>{
++          
++          this.pk_test_details_id=data[0].pk_test_details_id,
++          this.fk_email_id=data[0].fk_email_id,
++           this.fk_cat_id=data[0].fk_cat_id,
++          this.t_marks=data[0].t_marks,
++          this.t_date=data[0].t_date;
++        }
++      );
++    }
++
++  }
++
++
++  addTest_details()
++  {
++    if(this.pk_test_details_id==0)
++    {
++
++    this._test_data.addTest_details(new TestdetailsModel(this.pk_test_details_id,this.fk_email_id,this.fk_cat_id,this.t_marks,this.t_date))
++    .subscribe(
++      (data:any)=>{
++
++         console.log(data);
++         this._router.navigate(['/allTestdetails']);
++    },
++    function(error){},
++    function(){
++     
++      alert('added');
++      }
++    );
++  }
++  
++  else
++  {
++    //edit
++    this._test_data.updateTest_details(new TestdetailsModel(this.pk_test_details_id,this.fk_email_id,this.fk_cat_id,this.t_marks,this.t_date))
++    .subscribe(
++      (data:any)=>{
++
++         console.log(data); 
++         this._router.navigate(['/allTestdetails']); 
++    },
++    function(error){
++
++      alert(error);
++    },
++    function(){
++      alert('Updated');
++      }
++    );
++
++  }
++  }
++
++
++}
+diff --git a/src/app/testdetails/testdetails.component.css b/src/app/testdetails/testdetails.component.css
+new file mode 100644
+index 0000000..e69de29
+diff --git a/src/app/testdetails/testdetails.component.html b/src/app/testdetails/testdetails.component.html
+new file mode 100644
+index 0000000..08b5c0c
+--- /dev/null
++++ b/src/app/testdetails/testdetails.component.html
+@@ -0,0 +1,46 @@
++<app-header> </app-header>
++<div class="row">
++  <div class="col-md-offset-11">
++<button (click)='addTest_details(item)' type="button" class="btn btn-primary">
++<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></button>
++</div>
++
++</div>
++
++<table class="table">
++    <tr>
++      <th><button (click)="deleteAll()" class="btn btn-danger"><span>Delete All</span></button> </th>
++      
++      <th>User Name</th>
++      <th>Category Name</th>
++      <th>Marks</th>
++      <th>Date</th>
++      
++      
++      
++      
++      </tr>
++    <tr *ngFor="let item of ( alltestdetails | paginate: { itemsPerPage: 5, currentPage: page } )">
++      <td> <input type="checkbox" (change)="checkChange(item)" /> </td>
++  
++  <td>{{item.u_name}}</td>
++  <td>{{item.cat_name}}</td>       
++  <td>{{item.t_marks}}</td>
++  <td>{{item.t_date}}</td>  
++  
++  
++ <!-- <td>{{item.q_img}}</td> -->
++   
++ 
++  
++<td><button (click)='deleteTest_details(item)' type="button" class="btn btn-danger">
++<span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button></td>
++<td><button (click)='updateTest_details(item)' type="button" class="btn btn-danger">
++<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button></td>
++
++   </tr>
++  </table>
++
++   <div class="has-text-centered">
++    <pagination-controls (pageChange)="page = $event"></pagination-controls>
++</div>
+diff --git a/src/app/testdetails/testdetails.component.ts b/src/app/testdetails/testdetails.component.ts
+new file mode 100644
+index 0000000..afa59ec
+--- /dev/null
++++ b/src/app/testdetails/testdetails.component.ts
+@@ -0,0 +1,112 @@
++import { Component, OnInit } from '@angular/core';
++import { TestdetailsModel } from '../shared/testdetails-model';
++import { TestdetailsdataService } from '../shared/testdetailsdata.service';
++import { TestdetailsModel1 } from '../shared/testdetails-model1';
++import { Router } from '@angular/router';
++
++@Component({
++  selector: 'app-testdetails',
++  templateUrl: './testdetails.component.html',
++  styleUrls: ['./testdetails.component.css']
++})
++export class TestdetailsComponent implements OnInit {
++
++delarr:TestdetailsModel1[]=[];
++alltestdetails:TestdetailsModel1[]=[];
++
++  constructor(public _test_data:TestdetailsdataService,public _router:Router) { }
++
++  ngOnInit() {
++
++    this._test_data.getTest_details_join().subscribe(
++
++      (data:TestdetailsModel1[])=>{
++        this.alltestdetails=data;
++      },
++      function(error){
++        alert('vaat lagshe');
++      },
++      function(){
++        console.log('badhu patyu');
++      }
++    );
++  }
++
++
++   deleteTest_details(item:TestdetailsModel1){
++
++  this._test_data.deleteTest_details(item.pk_test_details_id).subscribe(
++   (data:any)=>{
++      this.alltestdetails.splice(this.alltestdetails.indexOf(item),1);
++      alert('udi gayu');
++    },
++      function(error){
++        alert('vaat lagshe');
++      },
++      function(){
++        console.log('badhu patyu');
++      }
++  );
++
++}
++
++ addTest_details(item:TestdetailsModel1){
++
++        this._router.navigate(['/addTestdetails',0]);
++}
++
++ updateTest_details(item:TestdetailsModel1)
++  {
++      this._router.navigate(['/addTestdetails',item.pk_test_details_id]);
++  }
++
++ 
++i:number=0;
++    checkChange(item:TestdetailsModel1)
++    {
++      
++        if(this.delarr.find(x=>x==item))
++        {
++          this.delarr.splice(this.delarr.indexOf(item),1);
++        }
++        else
++        {
++          this.delarr.push(item);
++        }
++        console.log(this.delarr);
++      
++    }
++    deleteAll()
++    {
++      /*if(confirm("Are You Sure want to delete?"))
++      {
++        for(this.i=0;this.i<=this.delarr.length;this.i++)
++        {
++          this.deleteUser1(this.delarr[this.i]);
++        }
++      }*/
++      this._test_data.deleteAll(this.delarr).subscribe(
++        
++          (data:any)=>{
++            
++            for(this.i=0 ; this.i<this.delarr.length ; this.i++)
++            {
++               if(this.alltestdetails.find(x=>x==this.delarr[this.i]))
++                {
++                   this.alltestdetails.splice(this.alltestdetails.indexOf(this.delarr[this.i]),1);
++                 }
++            }
++            this.delarr=[];
++            
++          },
++          function(err){console.log(err);},
++          function(){
++
++            console.log("Complete");
++          }
++        
++      );
++    }
++
++
++}
+-- 
+2.8.3.windows.1
+

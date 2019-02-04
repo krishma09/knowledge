@@ -1,0 +1,74 @@
+<app-header> </app-header>
+ <div *ngIf="pk_ans_id==0" >Add Answer Here</div>
+  <div *ngIf="pk_ans_id!=0" >Edit Answer Here</div>
+ 
+
+<form (ngSubmit)="addAnswer()">
+
+  <!--
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Answer Id:</span>
+  <td><input type="number" name="pk_ans_id" [(ngModel)]="pk_ans_id"/></td>
+</div>
+<br/> -->
+
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Answer Description:</span>
+  <td><input type="text" name="ans_desc" [(ngModel)]="ans_desc" /></td>
+</div>
+<br/>
+
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1"> Email id:</span>
+  <td><input type="text" name="fk_email_id" [(ngModel)]="fk_email_id" /></td>
+</div>
+<br/>
+
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Question id:</span>
+  <td><input type="number" name="fk_q_id" [(ngModel)]="fk_q_id" /></td>
+</div>
+<br/>
+<!--
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Answer date:</span>
+  <td><input type="date" name="ans_date" [(ngModel)]="ans_date" /></td>
+</div>
+<br/>
+-->
+
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Answer example:</span>
+  <td><input type="text" name="ans_ex" [(ngModel)]="ans_ex" /></td>
+</div>
+<br/>
+
+<!--<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Flag:</span>
+  <td><input type="text" name="flag" [(ngModel)]="flag" /></td>
+</div>
+<br/>-->
+
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Answer Image:</span>
+  <td><input type="file"  (change)="fileChange(input)" #input/></td>
+</div>
+<!--<div *ngFor="let file_src of file_srcs; let i = index">  -->
+  <img [attr.src]='file_srcs[0]' alt=""/>
+  
+  
+<!--</div>-->
+
+<br/>
+
+
+
+
+
+
+
+<div *ngIf="pk_ans_id==0"><button type="submit">Add Answer</button></div>
+<div *ngIf="pk_ans_id!=0"><button type="submit">Edit Answer</button></div>
+
+</form>
+

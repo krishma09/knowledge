@@ -1,0 +1,82 @@
+<app-header> </app-header>
+ <div *ngIf="pk_q_id==0" >Add Question Here</div>
+  <div *ngIf="pk_q_id!=0" >Edit Question Here</div>
+
+
+<form (ngSubmit)="addQuestion()">
+
+  <!--
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Discussion Id:</span>
+  <td><input type="number" name="pk_d_id" [(ngModel)]="pk_d_id"/>
+  
+  </td> 
+  </div>
+   -->
+
+
+
+<br/>
+
+
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Category Name:</span>
+  <td><!--<input type="text" name="fk_cat_id" [(ngModel)]="fk_cat_id" />-->
+  <select class="form-control" id="fk_cat_id" 
+[(ngModel)]="fk_cat_id" name="fk_cat_id" required>
+<option *ngFor="let s of allcat" [value]="s.pk_cat_id">{{s.cat_name}}</option>
+</select>
+  </td>
+</div>
+<br/>
+
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Question Title:</span>
+  <td><input type="text" name="q_title" [(ngModel)]="q_title" /></td>
+</div>
+<br/>
+
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Question Description:</span>
+  <td><input type="text" name="q_desc" [(ngModel)]="q_desc" /></td>
+</div>
+<br/>
+<!--
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Discussion Date:</span>
+  <td><input type="date" name="d_date" [(ngModel)]="d_date" /></td>
+</div>
+<br/>
+-->
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Email Id:</span>
+  <td><input type="text" name="fk_email_id" [(ngModel)]="fk_email_id" /></td>
+</div>
+<br/>
+
+<!--<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Question image:</span>
+  <td><input type="text" name="q_img" [(ngModel)]="q_img" /></td>
+</div>
+<br/>-->
+
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Question Image:</span>
+  <td><input type="file"  (change)="fileChange(input)" #input/></td>
+</div>
+<!--<div *ngFor="let file_src of file_srcs; let i = index">  -->
+  <img [attr.src]='file_srcs[0]' alt=""/>
+  
+  
+<!--</div>-->
+
+<br/>
+
+
+
+<div *ngIf="pk_q_id==0"><button type="submit">add Question</button></div>
+<div *ngIf="pk_q_id!=0"><button type="submit">Edit Question</button></div>
+
+
+</form>
+

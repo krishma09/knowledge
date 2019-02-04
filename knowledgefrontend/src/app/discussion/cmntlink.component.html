@@ -1,0 +1,59 @@
+<app-header> </app-header>
+<div class="col-md-12 col-sd-12" style="margin-left: 320px;">
+  <div class="col-md-6 col-sd-6">
+<div class="panel panel-success" background-color=#080606>
+  <div class="panel-heading"><h3>Title : {{d_title}}</h3></div>
+  <div class="panel-body">
+
+    <div><h4>Description : {{d_desc}}</h4></div>
+    <div>Date : {{d_date}}</div>
+  <!--  <div><h4>Comment By : {{u_name}}</h4></div>-->
+<div>
+  <br/>
+<hr> 
+<table class="table">
+    <thead><tr>
+        <th>Comment By : </th> 
+        <th>Comment</th>
+        <th>Date </th>
+      <!--  <th>Delete</th> -->
+        
+        </tr></thead>
+
+<tbody>
+     <tr *ngFor="let item of allcmntbyid">
+     
+       <td>{{item.u_name}}</td>     <!-- {{item.u_pic}}  for pic  -->
+       <td>{{item.comment}}</td>
+       <td>{{item.date}}</td>
+       <td><button (click)='deleteComment(item)' type="button" class="btn btn-danger">
+<span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button></td>
+
+       
+       
+    <!--    <td><button (click)="deleteDiscussion(item)"><span  class="glyphicon glyphicon-trash" aria-hidden="true"></span></button></td>
+      -->  
+    
+  </tr>
+</tbody>
+  </table>
+  <div class="panel panel-success" background-color="blue">
+<div class="panel-heading"><h3>Add your comment here</h3></div></div>
+  <textarea rows="7" cols="70" [(ngModel)]="comment">
+  </textarea>
+<input type="text" name="fk_email_id" [(ngModel)]="fk_email_id" paceholder="user email" />
+<br>
+  <br><br>
+<!-- Single button -->
+<div class="btn-group">
+  <button type="button" (click)="addComment()" class="btn btn-info"  aria-haspopup="true" aria-expanded="false">
+    Add
+  </button>
+  </div>
+  </div>
+
+
+  
+
+
+  

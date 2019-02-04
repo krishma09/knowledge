@@ -1,0 +1,64 @@
+<app-header> </app-header>
+<div>Add User Here</div>
+
+ 
+
+<form (ngSubmit)="addUsertbl()">
+
+
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter User Name:</span>
+  <td><input type="text" name="u_name" [(ngModel)]="u_name" /></td>
+</div>
+<br/>
+
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Email Id:</span>
+  <td><input type="email" name="pk_email_id" [(ngModel)]="pk_email_id" /></td>
+</div>
+<br/>
+
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Enter Password:</span>
+  <td><input type="password" name="u_pwd" [(ngModel)]="u_pwd" /></td>
+</div>
+<br/>
+
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1"> Gender:</span>
+  <td><input type="text" name="u_gender" [(ngModel)]="u_gender" /></td>
+</div>
+<br/>
+
+
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1"> City:</span>
+  <td><input type="text" name="u_city" [(ngModel)]="u_city" /></td>
+</div>
+<br/>
+
+<!--<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1"> Pic:</span>
+  <td><input type="text" name="u_pic" [(ngModel)]="u_pic" /></td>
+</div>
+<br/>-->
+
+
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Pic:</span>
+  <td><input type="file"  (change)="fileChange(input)" #input/></td>
+</div>
+<!--<div *ngFor="let file_src of file_srcs; let i = index">  -->
+  <img [attr.src]='file_srcs[0]' alt=""/>
+
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1"> Type:</span>
+  <td><input type="text" name="u_type" [(ngModel)]="u_type" /></td>
+</div>
+<br/>
+
+<div><button type="submit">Add User</button></div>
+
+
+</form>
+
